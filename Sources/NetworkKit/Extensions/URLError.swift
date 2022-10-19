@@ -11,6 +11,34 @@ extension URLError {
     /**
      Ошибки некорректной ссылки.
      */
+    struct BadURL {
+        /**
+         Пустая строка URL.
+         */
+        static var emptyURLString: URLError {
+            let userInfo = [
+                NSLocalizedDescriptionKey : "Пустая строка URL."
+            ]
+            
+            return URLError(.badURL, userInfo: userInfo)
+        }
+        /**
+         Недопустимые символы в строке URL.
+         */
+        static var illegalCharactersInURLString: URLError {
+            let userInfo = [
+                NSLocalizedDescriptionKey : "Недопустимые символы в строке URL."
+            ]
+            
+            return URLError(.badURL, userInfo: userInfo)
+        }
+        
+        
+    }
+    
+    /**
+     Ошибки некорректной ссылки.
+     */
     struct BadServerResponse {
         /**
          Ошибка некорректных метаданных HTTP.
