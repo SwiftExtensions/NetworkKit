@@ -38,7 +38,7 @@ public struct Networker {
         completionHandler: @escaping (URLSessionResponse<Data>) -> Void) -> URLSessionDataTask
     {
         let task = URLSession.shared.dataTask(with: request) { response in
-            if let error = response.result.failure as? URLError, error.code == .cancelled {
+            if response.result.failure?.urlError?.code == .cancelled {
                 return
             }
             
