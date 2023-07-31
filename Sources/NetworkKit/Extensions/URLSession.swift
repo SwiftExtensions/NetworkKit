@@ -18,7 +18,7 @@ extension URLSession {
      и вызвает блок обработки при завершини.
      
      - Parameter request: Параметры URL запроса.
-     - Parameter completionHandler: Блок вызваемый при завершении запроса.
+     - Parameter completion: Блок вызваемый при завершении запроса.
      - Returns: Новую сетевую задачу.
      */
     func dataTask(

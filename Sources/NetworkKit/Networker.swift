@@ -12,6 +12,11 @@ import Foundation
  */
 public struct Networker {
     /**
+     Блок вызваемый при завершении запроса.
+     */
+    public typealias Completion<Model> = (_ response: URLSessionResponse<Model>) -> Void
+    
+    /**
      Создать менеджера сетевых запросов.
      */
     public init() { }
@@ -29,20 +34,20 @@ public struct Networker {
      блок завершения не вызывается.
      
      - Parameter request: Параметры URL запроса.
-     - Parameter completionHandler: Блок вызваемый при завершении запроса.
+     - Parameter completion: Блок вызваемый при завершении запроса.
      - Returns: Задача URL сессии.
      */
     @discardableResult
     public mutating func loadData(
         with request: URLRequest,
-        completionHandler: @escaping (URLSessionResponse<Data>) -> Void) -> URLSessionDataTask
+        completion: @escaping Completion<Data>) -> URLSessionDataTask
     {
         let task = URLSession.shared.dataTask(with: request) { response in
             if response.result.failure?.urlError?.code == .cancelled {
                 return
             }
             
-            completionHandler(response)
+            completion(response)
         }
         task.resume()
         self.tasks.append(WeakObject(task))
@@ -61,11 +66,11 @@ public struct Networker {
     public mutating func loadDecodable<Model>(
         with request: URLRequest,
         decoder: JSONDecoder = JSONDecoder(),
-        completionHandler: @escaping (URLSessionResponse<Model>) -> Void)  -> URLSessionDataTask where Model : Decodable
+        completion: @escaping Completion<Model>)  -> URLSessionDataTask where Model : Decodable
     {
         self.loadData(with: request) { response in
             let response = response.decoding(type: Model.self, decoder: decoder)
-            completionHandler(response)
+            completion(response)
         }
     }
     /**
