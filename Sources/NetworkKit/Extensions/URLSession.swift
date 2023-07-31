@@ -9,6 +9,11 @@ import Foundation
 
 extension URLSession {
     /**
+     Блок вызваемый при завершении запроса.
+     */
+    typealias Completion = (_ response: URLSessionResponse<Data>) -> Void
+    
+    /**
      Создает задачу для получения содержимого URL, указанного в параметрах запроса,
      и вызвает блок обработки при завершини.
      
@@ -18,11 +23,11 @@ extension URLSession {
      */
     func dataTask(
         with request: URLRequest,
-        completionHandler: @escaping (URLSessionResponse<Data>) -> Void) -> URLSessionDataTask
+        completion: @escaping Completion) -> URLSessionDataTask
     {
         self.dataTask(with: request) { data, response, error in
             let response = URLSessionResponse(rawResponse: (data, response, error))
-            completionHandler(response)
+            completion(response)
         }
     }
     
