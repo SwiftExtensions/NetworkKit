@@ -19,6 +19,17 @@ public struct URLSessionResponse<Model> {
      Результат запроса.
      */
     public let result: Result<Model, Error>
+    /**
+     Ошибка запроса (_при наличии_).
+     */
+    public var error: Error? {
+        var error: Error?
+        if case let .failure(_error) = self.result {
+            error = _error
+        }
+        
+        return error
+    }
     
     /**
      Декодировать полученные от сервера данные к нужному типу.
