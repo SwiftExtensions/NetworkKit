@@ -32,6 +32,24 @@ public struct URLSessionResponse<Model> {
     }
     
     /**
+     Проверить успешность запроса.
+     - Parameter statusCodes: Список успешных статус кодов HTTP.
+     - Returns: Данные, проверенные на успешность запроса.
+     */
+    public func validating(
+        successfulHTTPStatusCodes statusCodes: (any Collection<Int>)?
+    ) -> URLSessionResponse where Model == Data {
+        guard let statusCodes else { return self }
+        guard let statusCode = self.metadata?.statusCode else { return self }
+        guard !statusCodes.contains(statusCode) else { return self }
+        
+        let error = URLError
+            .BadServerResponse(failingURL: metadata?.url)
+            .unsuccessfulHTTPStatusCode(statusCode)
+
+        return URLSessionResponse(metadata: self.metadata, result: .failure(error))
+    }
+    /**
      Декодировать полученные от сервера данные к нужному типу.
      - Parameter type: Запрашиваемый тип данных.
      - Parameter decoder: Объект для декодирования данных.
