@@ -49,12 +49,21 @@ extension URLError {
          Ошибка некорректных метаданных HTTP.
          */
         var invalidHTTPMetadata: URLError {
-            let userInfo = [
-                NSLocalizedDescriptionKey : "Некорректные метаданные HTTP.",
-                NSURLErrorKey : self.failingURL as Any
-            ]
-            
+            let userInfo = self.userInfo(description: "Некорректные метаданные HTTP.")
             return URLError(.badServerResponse, userInfo: userInfo)
+        }
+        
+        /**
+         Информация об ошибке.
+         - Parameter description: Описание ошибки.
+         - Returns: Информацию об ошибке.
+         */
+        func userInfo(description: String) -> [String : Any] {
+            [
+               NSLocalizedDescriptionKey : description,
+               NSURLErrorFailingURLErrorKey : self.failingURL as Any,
+               NSURLErrorFailingURLStringErrorKey : self.failingURL?.absoluteString as Any,
+           ]
         }
         /**
          Ошибка неуспешного статус кода HTTP.
@@ -62,11 +71,9 @@ extension URLError {
          */
         func unsuccessfulHTTPStatusCode(_ statusCode: Int) -> URLError {
             let statusCodeString = HTTPURLResponse.localizedString(forStatusCode: statusCode)
-            let description = "Неуспешный статус код HTTP: \(statusCode) - \(statusCodeString)."
-            let userInfo: [String : Any] = [
-                NSLocalizedDescriptionKey : description,
-                NSURLErrorKey : self.failingURL as Any
-            ]
+            let userInfo = self.userInfo(
+                description: "Неуспешный статус код HTTP: \(statusCode) - \(statusCodeString)."
+            )
             
             return URLError(.badServerResponse, userInfo: userInfo)
         }
@@ -74,11 +81,7 @@ extension URLError {
          Ошибка некорректного ответа сервера.
          */
         var unknownError: URLError {
-            let userInfo = [
-                NSLocalizedDescriptionKey : "Неизвестная ошибка.",
-                NSURLErrorKey : self.failingURL as Any
-            ]
-            
+            let userInfo = self.userInfo(description: "Неизвестная ошибка.")
             return URLError(.badServerResponse, userInfo: userInfo)
         }
         
