@@ -52,7 +52,7 @@ public struct URLSessionResponse<Model> {
     
 }
 
-// MARK: Инициализатор
+// MARK: - Инициализатор
 
 public extension URLSessionResponse where Model == Data {
     /**
@@ -64,11 +64,13 @@ public extension URLSessionResponse where Model == Data {
         if let error = rawResponse.error {
             self.result = .failure(error)
         } else if self.metadata == nil {
-            self.result = .failure(URLError.BadServerResponse.invalidHTTPMetadata)
+            let error = URLError.BadServerResponse(failingURL: nil).invalidHTTPMetadata
+            self.result = .failure(error)
         } else if let body = rawResponse.body {
             self.result = .success(body)
         } else {
-            self.result = .failure(URLError.BadServerResponse.unknownError)
+            let error = URLError.BadServerResponse(failingURL: self.metadata?.url).unknownError
+            self.result = .failure(error)
         }
     }
     

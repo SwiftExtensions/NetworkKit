@@ -41,21 +41,31 @@ extension URLError {
      */
     struct BadServerResponse {
         /**
+         URL, который вызвал сбой загрузки.
+         */
+        let failingURL: URL?
+        
+        /**
          Ошибка некорректных метаданных HTTP.
          */
-        static var invalidHTTPMetadata: URLError {
+        var invalidHTTPMetadata: URLError {
             let userInfo = [
-                NSLocalizedDescriptionKey : "Некорректные метаданные HTTP."
+                NSLocalizedDescriptionKey : "Некорректные метаданные HTTP.",
+                NSURLErrorKey : self.failingURL as Any
             ]
             
             return URLError(.badServerResponse, userInfo: userInfo)
         }
         /**
          Ошибка неуспешного статус кода HTTP.
+         - Parameter statusCode: Статус код HTTP.
          */
-        static func unsuccessfulHTTPStatusCode(_ statusCode: Int) -> URLError {
-            let userInfo = [
-                NSLocalizedDescriptionKey : "Неуспешный статус код HTTP: \(statusCode) - \(HTTPURLResponse.localizedString(forStatusCode: statusCode))."
+        func unsuccessfulHTTPStatusCode(_ statusCode: Int) -> URLError {
+            let statusCodeString = HTTPURLResponse.localizedString(forStatusCode: statusCode)
+            let description = "Неуспешный статус код HTTP: \(statusCode) - \(statusCodeString)."
+            let userInfo: [String : Any] = [
+                NSLocalizedDescriptionKey : description,
+                NSURLErrorKey : self.failingURL as Any
             ]
             
             return URLError(.badServerResponse, userInfo: userInfo)
@@ -63,9 +73,10 @@ extension URLError {
         /**
          Ошибка некорректного ответа сервера.
          */
-        static var unknownError: URLError {
+        var unknownError: URLError {
             let userInfo = [
-                NSLocalizedDescriptionKey : "Неизвестная ошибка."
+                NSLocalizedDescriptionKey : "Неизвестная ошибка.",
+                NSURLErrorKey : self.failingURL as Any
             ]
             
             return URLError(.badServerResponse, userInfo: userInfo)
