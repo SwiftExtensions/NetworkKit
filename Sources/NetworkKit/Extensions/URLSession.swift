@@ -26,7 +26,10 @@ extension URLSession {
         completion: @escaping Completion) -> URLSessionDataTask
     {
         self.dataTask(with: request) { data, response, error in
-            let response = URLSessionResponse(rawResponse: (data, response, error))
+            let response = URLSessionResponse(
+                request: request,
+                rawResponse: (data, response, error)
+            )
             completion(response)
         }
     }

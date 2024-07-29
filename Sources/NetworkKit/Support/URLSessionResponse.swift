@@ -75,19 +75,24 @@ public struct URLSessionResponse<Model> {
 public extension URLSessionResponse where Model == Data {
     /**
      Создает экземпляр с параметрами ответа сервера.
+     - Parameter request: Параметры URL запроса.
      - Parameter rawResponse: Кортеж с ответом сервера.
      */
-    init(rawResponse: (body: Data?, metadata: URLResponse?, error: Error?)) {
+    init(request: URLRequest, rawResponse: (body: Data?, metadata: URLResponse?, error: Error?)) {
         self.metadata = rawResponse.metadata as? HTTPURLResponse
         if let error = rawResponse.error {
             self.result = .failure(error)
         } else if self.metadata == nil {
-            let error = URLError.BadServerResponse(failingURL: nil).invalidHTTPMetadata
+            let error = URLError
+                .BadServerResponse(failingURL: request.url)
+                .invalidHTTPMetadata
             self.result = .failure(error)
         } else if let body = rawResponse.body {
             self.result = .success(body)
         } else {
-            let error = URLError.BadServerResponse(failingURL: self.metadata?.url).unknownError
+            let error = URLError
+                .BadServerResponse(failingURL: self.metadata?.url ?? request.url)
+                .unknownError
             self.result = .failure(error)
         }
     }
